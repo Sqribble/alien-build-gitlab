@@ -1,22 +1,25 @@
 # Alien::Build::Plugin::Download::GitLab
 
-Alien::Build plugin to download release assets from a GitLab instance.
+Alien::Build plugin that downloads a release archive from a GitLab instance.
 
-This is a **cleaned and slightly extended local copy** of the original module by Graham Ollis (plicease).
+Cleaned personal edition of the original module by Graham Ollis (plicease).
 
 - Original on MetaCPAN: [Alien::Build::Plugin::Download::GitLab](https://metacpan.org/pod/Alien::Build::Plugin::Download::GitLab)
-- Original GitHub: [PerlAlien/Alien-Build-Plugin-Download-GitLab](https://github.com/PerlAlien/Alien-Build-Plugin-Download-GitLab)
+- Original source: [PerlAlien/Alien-Build-Plugin-Download-GitLab](https://github.com/PerlAlien/Alien-Build-Plugin-Download-GitLab)
 
-## Changes in this copy
+## What was cleaned up
 
-- Fixed a small syntax error present in the upstream source (`my $filename =>` → `=`).
-- Added optional GitLab Private Token support via environment variables:
-  - `ALIEN_BUILD_GITLAB_TOKEN`
-  - `GITLAB_TOKEN`
-  - `GITLAB_PRIVATE_TOKEN`
-- Token is redacted from Alien::Build logs for safety.
-- Minor robustness improvements (defensive `|| []` on asset arrays).
-- Version bumped to 0.02 for this local edition.
+The upstream 0.01 sources do not compile in the `link` branch (`my $filename =>` is a syntax error), leave a `PRIVATE-TOKEN` TODO unimplemented, and crash when a release has no `assets` list. This tree fixes those and keeps the original license.
+
+- Syntax error in the link-asset branch is fixed.
+- Private-token support via `ALIEN_BUILD_GITLAB_TOKEN`, `GITLAB_TOKEN`, or `GITLAB_PRIVATE_TOKEN`.
+- The token is sent only to the configured GitLab host (scheme, host, and port). It is not attached to links on other hosts, and it is redacted from Alien::Build logs.
+- Same-host source archives receive the token, so private projects can actually download.
+- Missing `assets` / `sources` / `links` lists are skipped instead of throwing.
+- A GitLab error object (`{"message":"401 Unauthorized"}`) becomes a clear exception.
+- The releases index asks for the newest 100 (`per_page=100`, `sort=desc`).
+- Typo `Don't set set a start_url` is corrected.
+- Version of this edition: 0.03.
 
 ## Synopsis
 
@@ -25,36 +28,32 @@ use alienfile;
 
 share {
   plugin 'Download::GitLab' => (
-    gitlab_user    => 'your-user-or-group',
+    gitlab_user    => 'group/subgroup',
     gitlab_project => 'your-project',
     # optional:
-    # type           => 'source',   # or 'link'
-    # format         => 'tar.gz',
-    # version_from   => 'tag_name', # or 'name'
-    # link_name      => qr/\.tar\.gz$/,
+    # gitlab_host  => 'https://gitlab.example.com',
+    # type         => 'source',     # or 'link'
+    # format       => 'tar.gz',     # tar.bz2, tar, zip
+    # version_from => 'tag_name',   # or 'name'
+    # link_name    => qr/\.tar\.gz$/,
     # convert_version => sub { my $v = shift; $v =~ s/^v//; $v },
   );
 };
 ```
 
-## Installation (local / development)
+Put this checkout in front of the CPAN 0.01 release. `alienfile` requires version 0.03, so the broken upload cannot satisfy it:
 
 ```bash
-# From the directory that contains the lib/ folder
-export PERL5LIB=$PWD/lib:$PERL5LIB
+export PERL5LIB="$PWD/lib:$PERL5LIB"
 ```
 
-Or install with `cpanm` / `cpan` after packaging.
-
-## Environment Variables for Private Projects
+## Private projects
 
 ```bash
 export ALIEN_BUILD_GITLAB_TOKEN="glpat-xxxxxxxxxxxxxxxxxxxx"
-# or
-export GITLAB_TOKEN="glpat-xxxxxxxxxxxxxxxxxxxx"
-# or
-export GITLAB_PRIVATE_TOKEN="glpat-xxxxxxxxxxxxxxxxxxxx"
 ```
+
+`GITLAB_TOKEN` and `GITLAB_PRIVATE_TOKEN` are also accepted. The first one that is set and non-empty wins. The header is `PRIVATE-TOKEN`.
 
 ## License
 
@@ -63,4 +62,4 @@ Same terms as Perl 5 itself. Copyright (c) 2022 Graham Ollis.
 ## Author
 
 - Original: Graham Ollis <plicease@cpan.org>
-- This cleaned local copy: maintained under Sqribble for personal / experimental use.
+- This cleaned edition: Sqribble

@@ -1,9 +1,21 @@
-Revision history for Alien-Build-Plugin-Download-GitLab (local edition)
+Revision history for Alien-Build-Plugin-Download-GitLab (cleaned edition)
+
+0.03  2026-10-20
+        - Send PRIVATE-TOKEN to every request on the configured GitLab
+          host, not only the exact releases URL, so private source
+          archives authenticate. Never send the token to another host
+          or scheme.
+        - Redact the token from log lines and from API error exceptions.
+        - Request per_page=100, order_by=released_at, sort=desc.
+        - Reject GitLab error objects instead of iterating a hash.
+        - Do not autovivify a missing assets hash.
+        - Ignore empty tokens.
+        - Require this edition (0.03) at configure time.
 
 0.02  2026-10-20
-        - Cleaned source from local paste
+        - First cleaned copy from the local GitLab.pm
         - Fixed `my $filename =>` syntax error
-        - Added GitLab private token support (ALIEN_BUILD_GITLAB_TOKEN / GITLAB_TOKEN / GITLAB_PRIVATE_TOKEN)
+        - Added private token support for the releases index only
         - Token redaction in logs
         - Defensive handling of missing assets arrays
         - Based on original 0.01 by Graham Ollis
