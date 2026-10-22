@@ -1,5 +1,11 @@
 Revision history for Alien-Build-Plugin-Download-GitLab (cleaned edition)
 
+0.03  2026-10-22
+        - Added LICENSE file (Artistic License 2.0).
+        - Added Makefile.PL declaring dual license
+          Artistic-2.0 / GPL-1.0-or-later for PAUSE and MetaCPAN.
+        - Added repository and bugtracker resources to dist meta.
+
 0.03  2026-10-20
         - Send PRIVATE-TOKEN to every request on the configured GitLab
           host, not only the exact releases URL, so private source
